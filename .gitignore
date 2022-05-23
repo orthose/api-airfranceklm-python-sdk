@@ -1,1 +1,7 @@
 .idea/
+__pycache__/
+tests/api_key.txt
+tests/example_all_offers
+dist/
+build/
+api_airfranceklm.egg-info
