@@ -2,6 +2,7 @@
 __pycache__/
 tests/api_key.txt
 tests/example_all_offers
+tests/reference_data
 dist/
 build/
 api_airfranceklm.egg-info

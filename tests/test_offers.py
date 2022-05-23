@@ -4,8 +4,18 @@ import datetime
 import pickle
 
 
+context = afkl.Context(api_key_file='./api_key.txt')
+
+reference_data = offers.reference_data(context=context, verbose=True, output_format='json')
+print(reference_data)
+with open('./reference_data', 'wb') as f:
+    pickle.dump(reference_data, f)
+
+reference_data = offers.reference_data(context=context, verbose=True, output_format='dataframe')
+print(reference_data.to_string())
+
 all_offers_json = offers.all_available_offers(
-    context=afkl.Context(api_key_file='./api_key.txt'),
+    context=context,
     connections=[afkl.Connection(
         departure_date=datetime.date(2022, 5, 25),
         departure_location=afkl.Location(type=afkl.LocationType.CITY, code='PAR'),
@@ -24,7 +34,7 @@ with open('./example_all_offers', 'wb') as f:
     pickle.dump(all_offers_json, f)
 
 all_offers_pandas = offers.all_available_offers(
-    context=afkl.Context(api_key_file='./api_key.txt'),
+    context=context,
     connections=[afkl.Connection(
         departure_date=datetime.date(2022, 5, 25),
         departure_location=afkl.Location(type=afkl.LocationType.CITY, code='PAR'),

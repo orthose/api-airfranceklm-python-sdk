@@ -1,8 +1,71 @@
 import requests
 from api_airfranceklm.utils import \
     Context, Connection, Passenger, CommercialCabin, BookingFlow, FareOption, funutils, RequestException, FlatteningException
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Dict
 import pandas as pd
+
+
+def reference_data(context: Context,
+                   booking_flow: Optional[type(BookingFlow)] = None,
+                   output_format: str = 'dataframe',
+                   verbose: bool = False) -> Union[pd.DataFrame, Dict]:
+    """
+    Fournit les codes possibles pour les villes et aéroports
+    :param context: Contexte de connexion à l'API Airfrance KLM
+    :param booking_flow: Type de réservation (ex: loisir, travail)
+    :param output_format: Type d'objet retourné par la fonction
+    'json' -> Réponse complète de l'API
+    'dataframe' -> Table Pandas nettoyée
+    :param verbose: Afficher les paramètres de la requête
+    :return: Réponse de l'API
+    """
+    assert output_format in ('json', 'dataframe')
+
+    headers = context.get_headers()
+    params = dict()
+    if booking_flow is not None:
+        params['bookingFlow']: booking_flow.name
+    if verbose:
+        print(params)
+
+    url = 'https://api.airfranceklm.com/opendata/offers/v1/reference-data'
+    response = requests.get(url, headers=headers, params=params)
+    json_data = response.json()
+    RequestException.check(json_data)
+
+    if output_format == 'json':
+        return json_data
+
+    # Applanissement du JSON
+    elif output_format == 'dataframe':
+        try:
+            flatten_data = {
+                'code': [],
+                'name': [],
+                'location_type': []
+            }
+            assert len(json_data['countries']) == 1
+            assert len(json_data['countries'][0]['areas']) == 1
+            countries = json_data['countries'][0]['areas'][0]['countries']
+            for i in range(len(countries)):
+                country = countries[i]
+                cities = country['cities']
+                for j in range(len(cities)):
+                    city = cities[j]
+                    flatten_data['code'].append(city['code'])
+                    flatten_data['name'].append(city['label'])
+                    flatten_data['location_type'].append('CITY')
+                    stopovers = city['stopovers']
+                    for k in range(len(stopovers)):
+                        stopover = stopovers[k]
+                        flatten_data['code'].append(stopover['code'])
+                        flatten_data['name'].append(stopover['label'])
+                        flatten_data['location_type'].append(stopover['type'])
+
+            return pd.DataFrame(data=flatten_data).sort_values(by=['location_type'], ascending=True).reset_index()
+
+        except Exception:
+            raise FlatteningException()
 
 
 def all_available_offers(context: Context,
@@ -13,7 +76,7 @@ def all_available_offers(context: Context,
                          fare_option: Optional[type(FareOption)] = None,
                          currency: str = 'EUR',
                          output_format: str = 'dataframe',
-                         verbose: bool = False) -> Union[pd.DataFrame, str]:
+                         verbose: bool = False) -> Union[pd.DataFrame, Dict]:
     """
     Toutes les offres disponibles pour un itinéraire donné et ses passagers
     Les autres paramètres optionnels sont susceptibles de faire varier les tarifs et vols proposés
@@ -98,7 +161,7 @@ def all_available_offers(context: Context,
                 flatten_offers['number_segments'].append(len(connection['segments']))
                 flatten_offers['duration'].append(connection['duration'])
 
-            return pd.DataFrame(data=flatten_offers).sort_values(by=['total_price', 'duration'], ascending=True)
+            return pd.DataFrame(data=flatten_offers).sort_values(by=['total_price', 'duration'], ascending=True).reset_index()
 
         except Exception:
             raise FlatteningException()

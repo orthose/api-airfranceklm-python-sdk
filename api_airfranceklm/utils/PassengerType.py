@@ -11,7 +11,7 @@ class PassengerType(Enum):
     C14 = 4   # Jeune adulte entre 12 et 15 ans (UK)
     YTH = 5   # Jeune entre 12 et 18 ans
     YCD = 6   # Senior de plus de 65 ans
-    STU = 7
+    STU = 7   # Étudiant entre 18 et 29 ans
     B12 = 8   # Jeune adulte de 12 ans (UK)
     B13 = 9   # Jeune adulte de 13 ans (UK)
     B14 = 10  # Jeune adulte de 14 ans (UK)
