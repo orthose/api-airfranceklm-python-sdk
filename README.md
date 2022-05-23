@@ -2,13 +2,11 @@
 SDK Python pour requêter l'API REST de Airfrance KLM. Développé dans le cadre du projet de chatbot Marley 
 pour permettre aux utilisateurs d'obtenir des recommandations de billets d'avion.
 
-Auteur :
-* Maxime Vincent
-
-Contexte :
-* UE Projet Apprentissage
-* Master M1 ISD
-* Université Paris-Saclay
+* **Auteur** : Maxime Vincent
+* **Unité Enseignement** : Projet Apprentissage
+* **Enseignant** : M. Sylvain Conchon
+* **Formation** : Master M1 ISD
+* **Établissement** : Université Paris-Saclay
 
 # Documentation
 Pour se connecter à l'API il faut créer un compte via le nouveau [portail](https://developer.airfranceklm.com/). 
