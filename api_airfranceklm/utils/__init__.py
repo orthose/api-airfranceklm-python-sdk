@@ -8,3 +8,5 @@ from . CommercialCabin import CommercialCabin
 from . BookingFlow import BookingFlow
 from . FareOption import FareOption
 from . PromoType import PromoType
+from . RequestException import RequestException
+from . FlatteningException import FlatteningException
