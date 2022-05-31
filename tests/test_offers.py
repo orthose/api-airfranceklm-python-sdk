@@ -4,7 +4,7 @@ import datetime
 import pickle
 
 
-context = afkl.Context(api_key_file='./api_key.txt')
+context = afkl.Context(api_key_file='./api_key.txt', accept_language='us-US')
 
 reference_data = offers.reference_data(context=context, verbose=True, output_format='json')
 print(reference_data)
@@ -14,10 +14,13 @@ with open('./reference_data', 'wb') as f:
 reference_data = offers.reference_data(context=context, verbose=True, output_format='dataframe')
 print(reference_data.to_string())
 
+# Pour que la requête fonctionne quelle que soit la date d'exécution
+tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+
 all_offers_json = offers.all_available_offers(
     context=context,
     connections=[afkl.Connection(
-        departure_date=datetime.date(2022, 5, 25),
+        departure_date=tomorrow,
         departure_location=afkl.Location(type=afkl.LocationType.CITY, code='PAR'),
         arrival_location=afkl.Location(type=afkl.LocationType.CITY, code='NBO'))],
     passengers=[afkl.Passenger(
@@ -36,7 +39,7 @@ with open('./example_all_offers', 'wb') as f:
 all_offers_pandas = offers.all_available_offers(
     context=context,
     connections=[afkl.Connection(
-        departure_date=datetime.date(2022, 5, 25),
+        departure_date=tomorrow,
         departure_location=afkl.Location(type=afkl.LocationType.CITY, code='PAR'),
         arrival_location=afkl.Location(type=afkl.LocationType.CITY, code='LON'))],
     passengers=[afkl.Passenger(
