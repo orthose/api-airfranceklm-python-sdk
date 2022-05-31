@@ -40,8 +40,10 @@ def reference_data(context: Context,
     elif output_format == 'dataframe':
         try:
             flatten_data = {
-                'code': [],
-                'name': [],
+                'location_code': [],
+                'location_name': [],
+                'country_code': [],
+                'country_name': [],
                 'location_type': []
             }
             assert len(json_data['countries']) == 1
@@ -49,17 +51,23 @@ def reference_data(context: Context,
             countries = json_data['countries'][0]['areas'][0]['countries']
             for i in range(len(countries)):
                 country = countries[i]
+                country_code = country['code']
+                country_name = country['label']
                 cities = country['cities']
                 for j in range(len(cities)):
                     city = cities[j]
-                    flatten_data['code'].append(city['code'])
-                    flatten_data['name'].append(city['label'])
+                    flatten_data['country_code'].append(country_code)
+                    flatten_data['country_name'].append(country_name)
+                    flatten_data['location_code'].append(city['code'])
+                    flatten_data['location_name'].append(city['label'])
                     flatten_data['location_type'].append('CITY')
                     stopovers = city['stopovers']
                     for k in range(len(stopovers)):
                         stopover = stopovers[k]
-                        flatten_data['code'].append(stopover['code'])
-                        flatten_data['name'].append(stopover['label'])
+                        flatten_data['country_code'].append(country_code)
+                        flatten_data['country_name'].append(country_name)
+                        flatten_data['location_code'].append(stopover['code'])
+                        flatten_data['location_name'].append(stopover['label'])
                         flatten_data['location_type'].append(stopover['type'])
 
             return pd.DataFrame(data=flatten_data).sort_values(by=['location_type'], ascending=True).reset_index()
