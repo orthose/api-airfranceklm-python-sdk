@@ -6,10 +6,10 @@ class RequestException(Exception):
     def __init__(self, json_error):
         # On choisit uniquement la première erreur
         error = json_error['errors'][0]
-        self.code = error['code']
-        self.name = error['name']
-        self.description = error['description']
-        self.error_in_input_path = error['errorInInputPath']
+        self.code = error.get('code')
+        self.name = error.get('name')
+        self.description = error.get('description')
+        self.error_in_input_path = error.get('errorInInputPath')
         Exception.__init__(self, f'[{self.code} {self.name}] {self.description} in {self.error_in_input_path}')
 
     @staticmethod
