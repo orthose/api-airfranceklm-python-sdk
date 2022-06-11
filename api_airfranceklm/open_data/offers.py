@@ -130,6 +130,8 @@ def all_available_offers(context: Context,
     elif output_format == 'dataframe':
         try:
             flatten_offers = {
+                'itinerary': [],
+                'connection': [],
                 'departure_datetime': [],
                 'arrival_datetime': [],
                 'departure_city_code': [],
@@ -151,25 +153,32 @@ def all_available_offers(context: Context,
                 # Tous les passagers par itinéraire ?
                 assert len(json_offers['itineraries'][i]['flightProducts'][0]['passengers']) == len(passengers)
                 flight_product = json_offers['itineraries'][i]['flightProducts'][0]
-                flatten_offers['total_price'].append(flight_product['price']['totalPrice'])
-                flatten_offers['currency'].append(flight_product['price']['currency'])
-                # 1 seule connection par itinéraire ?
-                assert len(json_offers['itineraries'][i]['connections']) == 1
-                connection = json_offers['itineraries'][i]['connections'][0]
-                flatten_offers['departure_datetime'].append(connection['segments'][0]['departureDateTime'])
-                flatten_offers['arrival_datetime'].append(connection['segments'][0]['arrivalDateTime'])
-                flatten_offers['departure_city_code'].append(connection['segments'][0]['origin']['city']['code'])
-                flatten_offers['departure_airport_code'].append(connection['segments'][0]['origin']['code'])
-                flatten_offers['departure_city_name'].append(connection['segments'][0]['origin']['city']['name'])
-                flatten_offers['departure_airport_name'].append(connection['segments'][0]['origin']['name'])
-                flatten_offers['arrival_city_code'].append(connection['segments'][-1]['destination']['city']['code'])
-                flatten_offers['arrival_airport_code'].append(connection['segments'][-1]['destination']['code'])
-                flatten_offers['arrival_city_name'].append(connection['segments'][-1]['destination']['city']['name'])
-                flatten_offers['arrival_airport_name'].append(connection['segments'][-1]['destination']['name'])
-                flatten_offers['number_segments'].append(len(connection['segments']))
-                flatten_offers['duration'].append(connection['duration'])
+                # Il y a autant de connections par itinéraire que de connections en entrée
+                # On ne peut pas en demander plus de 2 actuellement
+                assert len(json_offers['itineraries'][i]['connections']) <= 2
+                for j in range(len(json_offers['itineraries'][i]['connections'])):
+                    connection = json_offers['itineraries'][i]['connections'][j]
+                    flatten_offers['itinerary'].append(i)
+                    flatten_offers['connection'].append(j)
+                    flatten_offers['departure_datetime'].append(connection['segments'][0]['departureDateTime'])
+                    flatten_offers['arrival_datetime'].append(connection['segments'][0]['arrivalDateTime'])
+                    flatten_offers['departure_city_code'].append(connection['segments'][0]['origin']['city']['code'])
+                    flatten_offers['departure_airport_code'].append(connection['segments'][0]['origin']['code'])
+                    flatten_offers['departure_city_name'].append(connection['segments'][0]['origin']['city']['name'])
+                    flatten_offers['departure_airport_name'].append(connection['segments'][0]['origin']['name'])
+                    flatten_offers['arrival_city_code'].append(connection['segments'][-1]['destination']['city']['code'])
+                    flatten_offers['arrival_airport_code'].append(connection['segments'][-1]['destination']['code'])
+                    flatten_offers['arrival_city_name'].append(connection['segments'][-1]['destination']['city']['name'])
+                    flatten_offers['arrival_airport_name'].append(connection['segments'][-1]['destination']['name'])
+                    flatten_offers['number_segments'].append(len(connection['segments']))
+                    flatten_offers['duration'].append(connection['duration'])
+                    price = flight_product['connections'][j]['price']
+                    flatten_offers['total_price'].append(price['totalPrice'])
+                    flatten_offers['currency'].append(price['currency'])
 
-            return pd.DataFrame(data=flatten_offers).sort_values(by=['total_price', 'duration'], ascending=True).reset_index(drop=True)
+            res = pd.DataFrame(data=flatten_offers)
+            res['total_price_itinerary'] = res.groupby('itinerary')['total_price'].transform('sum')
+            return res.sort_values(['total_price_itinerary', 'itinerary', 'connection'], ascending=[True, True, True])
 
         except Exception:
             raise FlatteningException()
