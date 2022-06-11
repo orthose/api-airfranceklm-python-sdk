@@ -70,7 +70,7 @@ def reference_data(context: Context,
                         flatten_data['location_name'].append(stopover['label'])
                         flatten_data['location_type'].append(stopover['type'])
 
-            return pd.DataFrame(data=flatten_data).sort_values(by=['location_type'], ascending=True).reset_index()
+            return pd.DataFrame(data=flatten_data).sort_values(by=['location_type'], ascending=True).reset_index(drop=True)
 
         except Exception:
             raise FlatteningException()
@@ -169,7 +169,7 @@ def all_available_offers(context: Context,
                 flatten_offers['number_segments'].append(len(connection['segments']))
                 flatten_offers['duration'].append(connection['duration'])
 
-            return pd.DataFrame(data=flatten_offers).sort_values(by=['total_price', 'duration'], ascending=True).reset_index()
+            return pd.DataFrame(data=flatten_offers).sort_values(by=['total_price', 'duration'], ascending=True).reset_index(drop=True)
 
         except Exception:
             raise FlatteningException()
