@@ -91,6 +91,7 @@ def all_available_offers(context: Context,
     https://docs.airfranceklm.com/docs/read/opendata/offers/POST_availableoffers_all_v1
     :param context: Contexte de connexion à l'API Airfrance KLM
     :param connections: Itinéraires désirés entre 2 lieux avec une date de départ
+    Au maximum 2 connexions sont autorisées actuellement
     :param passengers: Passagers avec leur classe d'âge renseignée
     :param commercial_cabins: Type de cabine (ex: première classe, classe économique)
     :param booking_flow: Type de réservation (ex: loisir, travail)

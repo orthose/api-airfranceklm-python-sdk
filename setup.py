@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='api-airfranceklm',
-    version='0.0.0',
+    version='0.0.1',
     description='SDK to request Airfrance KLM REST API',
     url='https://github.com/orthose/api-airfranceklm-python-sdk',
     author='Maxime Vincent',

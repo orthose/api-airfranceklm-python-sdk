@@ -23,6 +23,11 @@ Ce SDK peut être construit sous forme d'une archive wheel pour être installé 
 pip install dist/api_airfranceklm-0.0.0-py2.py3-none-any.whl
 ```
 
+Ou de manière plus simple à l'aide du lien du dépôt github.
+```commandline
+pip install git+https://github.com/orthose/api-airfranceklm-python-sdk.git
+```
+
 Il est ensuite possible d'utiliser l'API en l'important au début d'un script Python.
 ```python
 from api_airfranceklm.open_data import offers
