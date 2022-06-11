@@ -2,8 +2,9 @@ from api_airfranceklm.open_data import offers
 import api_airfranceklm.utils as afkl
 import datetime
 import pickle
+from dotenv import get_key
 
-context = afkl.Context(api_key_file='./api_key.txt', accept_language='us-US')
+context = afkl.Context(api_key=get_key('.env', 'API_KEY'), accept_language='us-US')
 
 reference_data = offers.reference_data(context=context, verbose=True, output_format='json')
 print(reference_data)
